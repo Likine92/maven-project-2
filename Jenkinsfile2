@@ -26,7 +26,7 @@ pipeline {
                 -Dsonar.login=sqp_8afef712337436e73c4d32d9ed3c1bfe313a7c13'
             }
         }
-        stage ('Deploy to Tomee') {
+        stage ('Deploy to Tomcat') {
       steps {
         script {
           deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://18.212.218.75:8888/')], contextPath: 'primus', onFailure: false, war: 'webapp/target/*.war' 
