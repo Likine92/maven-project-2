@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "Maven"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Get some code from a GitHub repository
+                git 'https://github.com/Likine92/maven-project-2.git'
+
+                // Run Maven on a Unix agent.
+
+                // To run Maven on a Windows agent, use
+                // bat "mvn -Dmaven.test.failure.ignore=true clean package"
+            }
+        }
+        stage('Sonarqube-code-scan') {
+            steps {
+               sh 'mvn clean verify sonar:sonar \
+                -Dsonar.projectKey=primus \
+                -Dsonar.host.url=http://18.212.218.75:9000 \
+                -Dsonar.login=sqp_8afef712337436e73c4d32d9ed3c1bfe313a7c13'
+            }
+        }
+        stage ('Deploy to Tomee') {
+      steps {
+        script {
+          deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://18.212.218.75:8888/')], contextPath: 'primus', onFailure: false, war: 'webapp/target/*.war' 
+            }
+          }
+            
+        }
+    }
+    
+}
